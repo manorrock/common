@@ -12,6 +12,7 @@
     <name>KeyValueStore project</name>
     <modules>
         <module>api</module>
+        <module>file</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
