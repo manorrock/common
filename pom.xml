@@ -47,7 +47,6 @@
     </build>
     <modules>
         <module>yaml</module>
-        <module>kvs</module>
     </modules>
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
