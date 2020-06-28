@@ -29,6 +29,7 @@
  */
 package com.manorrock.common.kvs.filesystem;
 
+import com.manorrock.common.kvs.api.KeyValueMapper;
 import com.manorrock.common.kvs.api.KeyValueStore;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -40,79 +41,102 @@ import java.util.logging.Logger;
 
 /**
  * A file-system based KeyValueStore.
- * 
+ *
  * @author Manfred Riem (mriem@manorrock.com)
  * @param <K> the type of the key.
  * @param <V> the type of the value.
  */
-public class FilesystemKeyValueStore<K,V> implements KeyValueStore<K,V> {
-    
+public class FilesystemKeyValueStore<K, V> implements KeyValueStore<K, V> {
+
     /**
      * Stores the logger.
      */
     private static final Logger LOGGER = Logger.getLogger(KeyValueStore.class.getPackage().getName());
-    
+
     /**
-     * Stores the base directory.
+     * Stores the key mapper.
      */
-    private final File baseDirectory;
-    
+    private KeyValueMapper keyMapper;
+
+    /**
+     * Stores the value mapper.
+     */
+    private KeyValueMapper valueMapper;
+
     /**
      * Constructor.
-     * 
+     *
      * @param baseDirectory the base directory.
      */
     public FilesystemKeyValueStore(File baseDirectory) {
-        this.baseDirectory = baseDirectory;
+        this.keyMapper = new FilenameToFileMapper(baseDirectory);
+        this.valueMapper = new ByteArrayToStringMapper();
     }
 
     /**
      * Delete the given key.
-     * 
+     *
      * @param key the key.
      */
     @Override
     public void delete(K key) {
-        File file = new File(baseDirectory, key.toString());
+        File file = (File) keyMapper.map(key);
         if (file.exists()) {
             file.delete();
         }
     }
-    
+
     /**
-     * @see KeyValueStore#get(java.lang.Object) 
+     * @see KeyValueStore#get(java.lang.Object)
      */
     @Override
     public V get(K key) {
         V result = null;
-        File file = new File(baseDirectory, key.toString());
+        File file = (File) keyMapper.map(key);
         if (file.exists()) {
             try {
                 byte[] bytes = Files.readAllBytes(Paths.get(file.toURI()));
-                result = (V) new String(bytes);
+                result = (V) valueMapper.map(bytes);
             } catch (IOException ioe) {
                 LOGGER.log(WARNING, "Unable to get content for key: " + key, ioe);
             }
         }
         return result;
     }
-    
+
     /**
-     * @see KeyValueStore#put(java.lang.Object, java.lang.Object) 
+     * @see KeyValueStore#put(java.lang.Object, java.lang.Object)
      */
     @Override
     public void put(K key, V value) {
-        File file = new File(baseDirectory, key.toString());
+        File file = (File) keyMapper.map(key);
         if (value instanceof String) {
             String string = (String) value;
             File parentFile = file.getParentFile();
             parentFile.mkdirs();
-            try (FileOutputStream fileOutput = new FileOutputStream(file)) {
+            try ( FileOutputStream fileOutput = new FileOutputStream(file)) {
                 fileOutput.write(string.getBytes("UTF-8"));
                 fileOutput.flush();
             } catch (IOException ioe) {
                 LOGGER.log(WARNING, "Unable to put content for key: " + key, ioe);
             }
         }
+    }
+
+    /**
+     * @see KeyValueStore#setKeyMapper(com.manorrock.common.kvs.api.Mapper)
+     */
+    @Override
+    public void setKeyMapper(KeyValueMapper<K, Object> keyMapper) {
+        this.keyMapper = keyMapper;
+    }
+
+    /**
+     * @see
+     * KeyValueStore#setValueMapper(com.manorrock.common.kvs.api.ValueMapper)
+     */
+    @Override
+    public void setValueMapper(KeyValueMapper<Object, V> valueMapper) {
+        this.valueMapper = valueMapper;
     }
 }

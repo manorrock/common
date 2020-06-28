@@ -30,48 +30,19 @@
 package com.manorrock.common.kvs.api;
 
 /**
- * The KeyValueStore API.
+ * The KeyValueMapper API.
  * 
  * @author Manfred Riem (mriem@manorrock.com)
- * @param <K> the type of the key.
- * @param <V> the type of the value.
+ * @param <F> the type of the from.
+ * @param <T> the type of the to.
  */
-public interface KeyValueStore<K, V> {
+public interface KeyValueMapper<F,T> {
     
     /**
-     * Delete the value.
+     * Map the from to the to.
      * 
-     * @param key the key.
+     * @param from the from.
+     * @return the to.
      */
-    void delete(K key);
-    
-    /**
-     * Get the value.
-     * 
-     * @param key the key.
-     * @return the value.
-     */
-    V get(K key);
-
-    /**
-     * Put the value.
-     *
-     * @param key the key.
-     * @param value the value.
-     */
-    void put(K key, V value);
-    
-    /**
-     * Set the key mapper.
-     * 
-     * @param keyMapper the key mapper.
-     */
-    void setKeyMapper(KeyValueMapper<K, Object> keyMapper);
-    
-    /**
-     * Set the value mapper.
-     * 
-     * @param valueMapper the value mapper.
-     */
-    void setValueMapper(KeyValueMapper<Object, V> valueMapper);
+    T map(F from);
 }

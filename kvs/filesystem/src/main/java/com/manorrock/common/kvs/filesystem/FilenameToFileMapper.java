@@ -27,51 +27,40 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  */
-package com.manorrock.common.kvs.api;
+package com.manorrock.common.kvs.filesystem;
+
+import com.manorrock.common.kvs.api.KeyValueMapper;
+import java.io.File;
 
 /**
- * The KeyValueStore API.
+ * The filename to file mapper.
  * 
  * @author Manfred Riem (mriem@manorrock.com)
- * @param <K> the type of the key.
- * @param <V> the type of the value.
  */
-public interface KeyValueStore<K, V> {
-    
-    /**
-     * Delete the value.
-     * 
-     * @param key the key.
-     */
-    void delete(K key);
-    
-    /**
-     * Get the value.
-     * 
-     * @param key the key.
-     * @return the value.
-     */
-    V get(K key);
+public class FilenameToFileMapper implements KeyValueMapper<String, File> {
 
     /**
-     * Put the value.
-     *
-     * @param key the key.
-     * @param value the value.
+     * Stores the base directory.
      */
-    void put(K key, V value);
+    private final File baseDirectory;
     
     /**
-     * Set the key mapper.
+     * Constructor.
      * 
-     * @param keyMapper the key mapper.
+     * @param baseDirectory the base directory.
      */
-    void setKeyMapper(KeyValueMapper<K, Object> keyMapper);
+    public FilenameToFileMapper(File baseDirectory) {
+        this.baseDirectory = baseDirectory;
+    }
     
     /**
-     * Set the value mapper.
+     * Map the filename to a file.
      * 
-     * @param valueMapper the value mapper.
+     * @param filename the filename.
+     * @return the file.
      */
-    void setValueMapper(KeyValueMapper<Object, V> valueMapper);
+    @Override
+    public File map(String filename) {
+        return new File(baseDirectory, filename);
+    }
 }
