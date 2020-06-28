@@ -37,7 +37,7 @@ import java.io.File;
  * 
  * @author Manfred Riem (mriem@manorrock.com)
  */
-public class FilenameToFileMapper implements KeyValueMapper<String, File> {
+class FilenameToFileMapper implements KeyValueMapper<String, File> {
 
     /**
      * Stores the base directory.

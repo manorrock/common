@@ -40,7 +40,7 @@ import java.util.logging.Logger;
  *
  * @author Manfred Riem (mriem@manorrock.com)
  */
-public class ByteArrayToStringMapper implements KeyValueMapper<byte[], String> {
+class ByteArrayToStringMapper implements KeyValueMapper<byte[], String> {
 
     /**
      * Stores the logger.
