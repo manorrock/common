@@ -44,5 +44,13 @@ public interface KeyValueMapper<F,T> {
      * @param from the from.
      * @return the to.
      */
-    T map(F from);
+    T to(F from);
+    
+    /**
+     * Map the to the from.
+     * 
+     * @param to the to.
+     * @return the from.
+     */
+    F from(T to);
 }

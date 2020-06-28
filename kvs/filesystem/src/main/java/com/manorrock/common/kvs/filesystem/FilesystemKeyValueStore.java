@@ -70,7 +70,7 @@ public class FilesystemKeyValueStore<K, V> implements KeyValueStore<K, V> {
      */
     public FilesystemKeyValueStore(File baseDirectory) {
         this.keyMapper = new FilenameToFileMapper(baseDirectory);
-        this.valueMapper = new ByteArrayToStringMapper();
+        this.valueMapper = new IdentityMapper();
     }
 
     /**
@@ -80,7 +80,7 @@ public class FilesystemKeyValueStore<K, V> implements KeyValueStore<K, V> {
      */
     @Override
     public void delete(K key) {
-        File file = (File) keyMapper.map(key);
+        File file = (File) keyMapper.to(key);
         if (file.exists()) {
             file.delete();
         }
@@ -92,11 +92,11 @@ public class FilesystemKeyValueStore<K, V> implements KeyValueStore<K, V> {
     @Override
     public V get(K key) {
         V result = null;
-        File file = (File) keyMapper.map(key);
+        File file = (File) keyMapper.to(key);
         if (file.exists()) {
             try {
                 byte[] bytes = Files.readAllBytes(Paths.get(file.toURI()));
-                result = (V) valueMapper.map(bytes);
+                result = (V) valueMapper.from(bytes);
             } catch (IOException ioe) {
                 LOGGER.log(WARNING, "Unable to get content for key: " + key, ioe);
             }
@@ -109,17 +109,14 @@ public class FilesystemKeyValueStore<K, V> implements KeyValueStore<K, V> {
      */
     @Override
     public void put(K key, V value) {
-        File file = (File) keyMapper.map(key);
-        if (value instanceof String) {
-            String string = (String) value;
-            File parentFile = file.getParentFile();
-            parentFile.mkdirs();
-            try ( FileOutputStream fileOutput = new FileOutputStream(file)) {
-                fileOutput.write(string.getBytes("UTF-8"));
-                fileOutput.flush();
-            } catch (IOException ioe) {
-                LOGGER.log(WARNING, "Unable to put content for key: " + key, ioe);
-            }
+        File file = (File) keyMapper.to(key);
+        File parentFile = file.getParentFile();
+        parentFile.mkdirs();
+        try ( FileOutputStream fileOutput = new FileOutputStream(file)) {
+            fileOutput.write((byte[]) valueMapper.to(value));
+            fileOutput.flush();
+        } catch (IOException ioe) {
+            LOGGER.log(WARNING, "Unable to put content for key: " + key, ioe);
         }
     }
 
@@ -127,7 +124,7 @@ public class FilesystemKeyValueStore<K, V> implements KeyValueStore<K, V> {
      * @see KeyValueStore#setKeyMapper(com.manorrock.common.kvs.api.Mapper)
      */
     @Override
-    public void setKeyMapper(KeyValueMapper<K, Object> keyMapper) {
+    public void setKeyMapper(KeyValueMapper keyMapper) {
         this.keyMapper = keyMapper;
     }
 
@@ -136,7 +133,7 @@ public class FilesystemKeyValueStore<K, V> implements KeyValueStore<K, V> {
      * KeyValueStore#setValueMapper(com.manorrock.common.kvs.api.ValueMapper)
      */
     @Override
-    public void setValueMapper(KeyValueMapper<Object, V> valueMapper) {
+    public void setValueMapper(KeyValueMapper valueMapper) {
         this.valueMapper = valueMapper;
     }
 }

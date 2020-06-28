@@ -27,51 +27,52 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  */
-package com.manorrock.common.kvs.api;
+package com.manorrock.common.kvs.filesystem;
+
+import com.manorrock.common.kvs.api.KeyValueMapper;
+import com.manorrock.common.kvs.api.KeyValueStore;
+import java.io.UnsupportedEncodingException;
+import static java.util.logging.Level.WARNING;
+import java.util.logging.Logger;
 
 /**
- * The KeyValueStore API.
- * 
+ * The byte-array to string mapper.
+ *
  * @author Manfred Riem (mriem@manorrock.com)
- * @param <K> the type of the key.
- * @param <V> the type of the value.
  */
-public interface KeyValueStore<K, V> {
-    
-    /**
-     * Delete the value.
-     * 
-     * @param key the key.
-     */
-    void delete(K key);
-    
-    /**
-     * Get the value.
-     * 
-     * @param key the key.
-     * @return the value.
-     */
-    V get(K key);
+public class StringToByteArrayMapper implements KeyValueMapper<String, byte[]> {
 
     /**
-     * Put the value.
-     *
-     * @param key the key.
-     * @param value the value.
+     * Stores the logger.
      */
-    void put(K key, V value);
-    
+    private static final Logger LOGGER
+            = Logger.getLogger(KeyValueStore.class.getPackage().getName());
+
     /**
-     * Set the key mapper.
-     * 
-     * @param keyMapper the key mapper.
+     * @see KeyValueMapper#to(java.lang.Object)
      */
-    void setKeyMapper(KeyValueMapper keyMapper);
-    
+    @Override
+    public byte[] to(String from) {
+        byte[] result = null;
+        try {
+            result = from.getBytes("UTF-8");
+        } catch (UnsupportedEncodingException uee) {
+            LOGGER.log(WARNING, "Encountered an unsupported encoding", uee);
+        }
+        return result;
+    }
+
     /**
-     * Set the value mapper.
-     * 
-     * @param valueMapper the value mapper.
+     * @see KeyValueMapper#from(java.lang.Object)
      */
-    void setValueMapper(KeyValueMapper valueMapper);
+    @Override
+    public String from(byte[] from) {
+        String result = null;
+        try {
+            result = new String(from, "UTF-8");
+        } catch (UnsupportedEncodingException uee) {
+            LOGGER.log(WARNING, "Encountered an unsupported encoding", uee);
+        }
+        return result;
+    }
 }

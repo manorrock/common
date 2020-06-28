@@ -60,7 +60,20 @@ class FilenameToFileMapper implements KeyValueMapper<String, File> {
      * @return the file.
      */
     @Override
-    public File map(String filename) {
+    public File to(String filename) {
         return new File(baseDirectory, filename);
+    }
+
+    /**
+     * Map the file to a filename.
+     * 
+     * @param file the file.
+     * @return the filename.
+     */
+    @Override
+    public String from(File file) {
+        String filename = file.getAbsolutePath();
+        filename = filename.substring(baseDirectory.getAbsolutePath().length());
+        return filename;
     }
 }

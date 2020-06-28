@@ -31,8 +31,6 @@ package com.manorrock.common.kvs.filesystem;
 
 import com.manorrock.common.kvs.api.KeyValueMapper;
 import com.manorrock.common.kvs.api.KeyValueStore;
-import java.io.UnsupportedEncodingException;
-import static java.util.logging.Level.WARNING;
 import java.util.logging.Logger;
 
 /**
@@ -40,24 +38,27 @@ import java.util.logging.Logger;
  *
  * @author Manfred Riem (mriem@manorrock.com)
  */
-class ByteArrayToStringMapper implements KeyValueMapper<byte[], String> {
+public class IdentityMapper implements KeyValueMapper<Object, Object> {
 
     /**
      * Stores the logger.
      */
-    private static final Logger LOGGER = Logger.getLogger(KeyValueStore.class.getPackage().getName());
+    private static final Logger LOGGER
+            = Logger.getLogger(KeyValueStore.class.getPackage().getName());
 
     /**
-     * @see KeyValueMapper#map(java.lang.Object)
+     * @see KeyValueMapper#to(java.lang.Object)
      */
     @Override
-    public String map(byte[] from) {
-        String result = null;
-        try {
-            result = new String(from, "UTF-8");
-        } catch (UnsupportedEncodingException uee) {
-            LOGGER.log(WARNING, "Encountered an unsupported encoding", uee);
-        }
-        return result;
+    public Object to(Object from) {
+        return from;
+    }
+
+    /**
+     * @see KeyValueMapper#from(java.lang.Object)
+     */
+    @Override
+    public Object from(Object to) {
+        return to;
     }
 }
