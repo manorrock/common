@@ -33,6 +33,8 @@ import com.manorrock.common.kvs.api.KeyValueStore;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import static java.util.logging.Level.WARNING;
 import java.util.logging.Logger;
 
@@ -40,8 +42,10 @@ import java.util.logging.Logger;
  * A file-system based KeyValueStore.
  * 
  * @author Manfred Riem (mriem@manorrock.com)
+ * @param <K> the type of the key.
+ * @param <V> the type of the value.
  */
-public class FilesystemKeyValueStore implements KeyValueStore {
+public class FilesystemKeyValueStore<K,V> implements KeyValueStore<K,V> {
     
     /**
      * Stores the logger.
@@ -63,10 +67,28 @@ public class FilesystemKeyValueStore implements KeyValueStore {
     }
     
     /**
+     * @see KeyValueStore#get(java.lang.Object) 
+     */
+    @Override
+    public V get(K key) {
+        V result = null;
+        File file = new File(baseDirectory, key.toString());
+        if (file.exists()) {
+            try {
+                byte[] bytes = Files.readAllBytes(Paths.get(file.toURI()));
+                result = (V) new String(bytes);
+            } catch (IOException ioe) {
+                LOGGER.log(WARNING, "Unable to get content for key: " + key, ioe);
+            }
+        }
+        return result;
+    }
+    
+    /**
      * @see KeyValueStore#put(java.lang.Object, java.lang.Object) 
      */
     @Override
-    public void put(Object key, Object value) {
+    public void put(K key, V value) {
         File file = new File(baseDirectory, key.toString());
         if (value instanceof String) {
             String string = (String) value;
@@ -76,7 +98,7 @@ public class FilesystemKeyValueStore implements KeyValueStore {
                 fileOutput.write(string.getBytes("UTF-8"));
                 fileOutput.flush();
             } catch (IOException ioe) {
-                LOGGER.log(WARNING, "An I/O error occured during put operation", ioe);
+                LOGGER.log(WARNING, "Unable to put content for key: " + key, ioe);
             }
         }
     }

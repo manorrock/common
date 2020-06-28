@@ -33,8 +33,18 @@ package com.manorrock.common.kvs.api;
  * The KeyValueStore API.
  * 
  * @author Manfred Riem (mriem@manorrock.com)
+ * @param <K> the type of the key.
+ * @param <V> the type of the value.
  */
-public interface KeyValueStore {
+public interface KeyValueStore<K, V> {
+    
+    /**
+     * Get the value.
+     * 
+     * @param key the key.
+     * @return the value.
+     */
+    V get(K key);
 
     /**
      * Put the value.
@@ -42,5 +52,5 @@ public interface KeyValueStore {
      * @param key the key.
      * @param value the value.
      */
-    void put(Object key, Object value);
+    void put(K key, V value);
 }

@@ -30,22 +30,36 @@
 package com.manorrock.common.kvs.filesystem;
 
 import java.io.File;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 /**
  * The JUnit tests for the FilesystemKeyValueStore class.
- * 
+ *
  * @author Manfred Riem (mriem@manorrock.com)
  */
 public class FilesystemKeyValueStoreTest {
-    
+
+    /**
+     * Test get method.
+     */
+    @Test
+    public void testGet() {
+        FilesystemKeyValueStore<String, String> kvs
+                = new FilesystemKeyValueStore<>(new File("target"));
+        kvs.put("mykey2", "myvalue2");
+        assertTrue(new File("target/mykey2").exists());
+        assertEquals("myvalue2", kvs.get("mykey2"));
+    }
+
     /**
      * Test put method.
      */
     @Test
     public void testPut() {
-        FilesystemKeyValueStore kvs = new FilesystemKeyValueStore(new File("target"));
+        FilesystemKeyValueStore<String, String> kvs
+                = new FilesystemKeyValueStore<>(new File("target"));
         kvs.put("mykey", "myvalue");
         assertTrue(new File("target/mykey").exists());
     }
