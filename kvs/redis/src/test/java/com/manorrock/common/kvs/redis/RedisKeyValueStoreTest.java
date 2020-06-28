@@ -27,38 +27,66 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  */
-package com.manorrock.common.kvs.filesystem;
+package com.manorrock.common.kvs.redis;
 
-import com.manorrock.common.kvs.api.KeyValueMapper;
-import com.manorrock.common.kvs.api.KeyValueStore;
+import io.lettuce.core.RedisURI;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.URI;
+import java.util.Properties;
+import static java.util.logging.Level.WARNING;
 import java.util.logging.Logger;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
- * The byte-array to string mapper.
+ * The JUnit tests for the RedisKeyValueStore class.
  *
  * @author Manfred Riem (mriem@manorrock.com)
  */
-public class IdentityMapper implements KeyValueMapper<Object, Object> {
+public class RedisKeyValueStoreTest {
 
     /**
      * Stores the logger.
      */
     private static final Logger LOGGER
-            = Logger.getLogger(KeyValueStore.class.getPackage().getName());
+            = Logger.getLogger(RedisKeyValueStoreTest.class.getPackage().getName());
 
     /**
-     * @see KeyValueMapper#to(java.lang.Object)
+     * Stores the URI.
      */
-    @Override
-    public Object to(Object from) {
-        return from;
+    private static URI uri;
+
+    /**
+     * Verify if we can test Redis.
+     */
+    @BeforeAll
+    public static void setUpClass() {
+        try {
+            Properties properties = new Properties();
+            properties.load(new FileInputStream("redis.properties"));
+            uri = RedisURI.Builder.redis(properties.getProperty("host"))
+                    .withPort(Integer.parseInt(properties.getProperty("port")))
+                    .withSsl(false)
+                    .withPassword(properties.getProperty("password")).build().toURI();
+        } catch (IOException ioe) {
+            LOGGER.log(WARNING, "An exception occurred", ioe);
+        }
     }
 
     /**
-     * @see KeyValueMapper#from(java.lang.Object)
+     * Test delete method.
      */
-    @Override
-    public Object from(Object to) {
-        return to;
+    @Test
+    public void testDelete() {
+        if (uri != null) {
+            RedisKeyValueStore<String, byte[]> kvs = new RedisKeyValueStore<>(uri);
+            kvs.put("delete", "deleteme".getBytes());
+            assertEquals("deleteme", new String(kvs.get("delete")));
+            kvs.delete("delete");
+            assertNull(kvs.get("delete"));
+        }
     }
 }

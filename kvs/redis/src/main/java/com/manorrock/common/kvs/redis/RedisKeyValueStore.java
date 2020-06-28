@@ -27,33 +27,36 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  */
-package com.manorrock.common.kvs.filesystem;
+package com.manorrock.common.kvs.redis;
 
-import com.manorrock.common.kvs.common.IdentityMapper;
 import com.manorrock.common.kvs.api.KeyValueMapper;
 import com.manorrock.common.kvs.api.KeyValueStore;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import static java.util.logging.Level.WARNING;
-import java.util.logging.Logger;
+import com.manorrock.common.kvs.common.IdentityMapper;
+import com.manorrock.common.kvs.common.StringToByteArrayMapper;
+import io.lettuce.core.RedisClient;
+import io.lettuce.core.api.StatefulRedisConnection;
+import io.lettuce.core.codec.RedisCodec;
+import java.net.URI;
+import java.nio.ByteBuffer;
 
 /**
- * A file-system based KeyValueStore.
+ * A Redis based KeyValueStore.
  *
  * @author Manfred Riem (mriem@manorrock.com)
  * @param <K> the type of the key.
  * @param <V> the type of the value.
  */
-public class FilesystemKeyValueStore<K, V> implements KeyValueStore<K, V> {
-
+public class RedisKeyValueStore<K, V> implements KeyValueStore<K, V> {
+    
     /**
-     * Stores the logger.
+     * Stores the Redis client.
      */
-    private static final Logger LOGGER
-            = Logger.getLogger(FilesystemKeyValueStore.class.getPackage().getName());
+    private RedisClient client;
+    
+    /**
+     * Stores the Redis connection.
+     */
+    private StatefulRedisConnection<K, V> connection;
 
     /**
      * Stores the key mapper.
@@ -68,11 +71,37 @@ public class FilesystemKeyValueStore<K, V> implements KeyValueStore<K, V> {
     /**
      * Constructor.
      *
-     * @param baseDirectory the base directory.
+     * @param uri the URI.
      */
-    public FilesystemKeyValueStore(File baseDirectory) {
-        this.keyMapper = new FilenameToFileMapper(baseDirectory);
+    public RedisKeyValueStore(URI uri) {
+        this.keyMapper = new StringToByteArrayMapper();
         this.valueMapper = new IdentityMapper();
+        client = RedisClient.create(uri.toString());
+        connection = client.connect(new RedisCodec<K, V>() {
+            @Override
+            public K decodeKey(ByteBuffer bb) {
+                byte[] bytes = new byte[bb.remaining()];
+                bb.get(bytes);
+                return (K) keyMapper.from(bytes);
+            }
+
+            @Override
+            public V decodeValue(ByteBuffer bb) {
+                byte[] bytes = new byte[bb.remaining()];
+                bb.get(bytes);
+                return (V) valueMapper.from(bytes);
+            }
+
+            @Override
+            public ByteBuffer encodeKey(K k) {
+                return ByteBuffer.wrap((byte[]) keyMapper.to(k));
+            }
+
+            @Override
+            public ByteBuffer encodeValue(V v) {
+                return ByteBuffer.wrap((byte[]) valueMapper.to(v));
+            }
+        });
     }
 
     /**
@@ -82,10 +111,7 @@ public class FilesystemKeyValueStore<K, V> implements KeyValueStore<K, V> {
      */
     @Override
     public void delete(K key) {
-        File file = (File) keyMapper.to(key);
-        if (file.exists()) {
-            file.delete();
-        }
+        connection.sync().del(key);
     }
 
     /**
@@ -93,17 +119,7 @@ public class FilesystemKeyValueStore<K, V> implements KeyValueStore<K, V> {
      */
     @Override
     public V get(K key) {
-        V result = null;
-        File file = (File) keyMapper.to(key);
-        if (file.exists()) {
-            try {
-                byte[] bytes = Files.readAllBytes(Paths.get(file.toURI()));
-                result = (V) valueMapper.from(bytes);
-            } catch (IOException ioe) {
-                LOGGER.log(WARNING, "Unable to get content for key: " + key, ioe);
-            }
-        }
-        return result;
+        return connection.sync().get(key);
     }
 
     /**
@@ -111,15 +127,7 @@ public class FilesystemKeyValueStore<K, V> implements KeyValueStore<K, V> {
      */
     @Override
     public void put(K key, V value) {
-        File file = (File) keyMapper.to(key);
-        File parentFile = file.getParentFile();
-        parentFile.mkdirs();
-        try ( FileOutputStream fileOutput = new FileOutputStream(file)) {
-            fileOutput.write((byte[]) valueMapper.to(value));
-            fileOutput.flush();
-        } catch (IOException ioe) {
-            LOGGER.log(WARNING, "Unable to put content for key: " + key, ioe);
-        }
+        connection.sync().set(key, value);
     }
 
     /**

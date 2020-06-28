@@ -27,7 +27,7 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  */
-package com.manorrock.common.kvs.filesystem;
+package com.manorrock.common.kvs.common;
 
 import com.manorrock.common.kvs.api.KeyValueMapper;
 import com.manorrock.common.kvs.api.KeyValueStore;
@@ -36,7 +36,7 @@ import static java.util.logging.Level.WARNING;
 import java.util.logging.Logger;
 
 /**
- * The byte-array to string mapper.
+ * The string to byte-array mapper.
  *
  * @author Manfred Riem (mriem@manorrock.com)
  */

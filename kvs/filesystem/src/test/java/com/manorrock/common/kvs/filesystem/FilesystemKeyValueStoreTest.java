@@ -29,6 +29,7 @@
  */
 package com.manorrock.common.kvs.filesystem;
 
+import com.manorrock.common.kvs.common.StringToByteArrayMapper;
 import java.io.File;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
