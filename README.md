@@ -3,6 +3,21 @@
 This project is used across the Manorrock.com portfolio to reuse common 
 functionality.
 
+## Available modules
+
+### KeyValueStore modules
+
+1. [Filesystem KeyValueStore](kvs/filesystem/)
+1. [Redis KeyValueStore](kvs/redis/)
+
+### Filesystem modules
+
+COMING
+
+### Utility modules
+
+1. [YAML utilities](yaml/)
+
 ## Important notice
 
 Note if you file issues or answer questions on the issue tracker and/or issue 
