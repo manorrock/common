@@ -63,6 +63,7 @@
         </snapshotRepository>
     </distributionManagement>
     <modules>
+        <module>filesystem</module>
         <module>kvs</module>
         <module>yaml</module>
     </modules>
