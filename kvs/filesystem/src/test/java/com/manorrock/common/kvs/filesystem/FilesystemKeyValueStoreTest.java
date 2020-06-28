@@ -31,6 +31,7 @@ package com.manorrock.common.kvs.filesystem;
 
 import java.io.File;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
@@ -45,12 +46,25 @@ public class FilesystemKeyValueStoreTest {
      * Test get method.
      */
     @Test
+    public void testDelete() {
+        FilesystemKeyValueStore<String, String> kvs
+                = new FilesystemKeyValueStore<>(new File("target"));
+        kvs.put("delete", "deleteme");
+        assertTrue(new File("target/delete").exists());
+        kvs.delete("delete");
+        assertFalse(new File("target/delete").exists());
+    }
+    
+    /**
+     * Test get method.
+     */
+    @Test
     public void testGet() {
         FilesystemKeyValueStore<String, String> kvs
                 = new FilesystemKeyValueStore<>(new File("target"));
-        kvs.put("mykey2", "myvalue2");
-        assertTrue(new File("target/mykey2").exists());
-        assertEquals("myvalue2", kvs.get("mykey2"));
+        kvs.put("get", "getme");
+        assertTrue(new File("target/get").exists());
+        assertEquals("getme", kvs.get("get"));
     }
 
     /**
@@ -60,7 +74,8 @@ public class FilesystemKeyValueStoreTest {
     public void testPut() {
         FilesystemKeyValueStore<String, String> kvs
                 = new FilesystemKeyValueStore<>(new File("target"));
-        kvs.put("mykey", "myvalue");
-        assertTrue(new File("target/mykey").exists());
+        kvs.put("put", "putme");
+        assertTrue(new File("target/put").exists());
+        assertEquals("putme", kvs.get("put"));
     }
 }

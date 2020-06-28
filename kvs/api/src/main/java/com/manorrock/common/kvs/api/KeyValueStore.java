@@ -39,6 +39,13 @@ package com.manorrock.common.kvs.api;
 public interface KeyValueStore<K, V> {
     
     /**
+     * Delete the value.
+     * 
+     * @param key the key.
+     */
+    void delete(K key);
+    
+    /**
      * Get the value.
      * 
      * @param key the key.

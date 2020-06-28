@@ -65,6 +65,19 @@ public class FilesystemKeyValueStore<K,V> implements KeyValueStore<K,V> {
     public FilesystemKeyValueStore(File baseDirectory) {
         this.baseDirectory = baseDirectory;
     }
+
+    /**
+     * Delete the given key.
+     * 
+     * @param key the key.
+     */
+    @Override
+    public void delete(K key) {
+        File file = new File(baseDirectory, key.toString());
+        if (file.exists()) {
+            file.delete();
+        }
+    }
     
     /**
      * @see KeyValueStore#get(java.lang.Object) 
