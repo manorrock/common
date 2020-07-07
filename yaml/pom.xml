@@ -9,7 +9,7 @@
         <artifactId>project</artifactId>
         <version>20.7.0-SNAPSHOT</version>
     </parent>
-    <artifactId>yaml</artifactId>
+    <artifactId>common-yaml</artifactId>
     <packaging>jar</packaging>
     <name>YAML utilities</name>
     <dependencies>

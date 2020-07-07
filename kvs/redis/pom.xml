@@ -7,7 +7,7 @@
         <artifactId>project</artifactId>
         <version>20.7.0-SNAPSHOT</version>
     </parent>
-    <artifactId>redis</artifactId>
+    <artifactId>common-kvs-redis</artifactId>
     <packaging>jar</packaging>
     <name>KeyValueStore - Redis implementation</name>
     <build>
