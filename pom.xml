@@ -9,12 +9,33 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.manorrock.common</groupId>
     <artifactId>project</artifactId>
-    <version>20.7.0-SNAPSHOT</version>
+    <version>20.8.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Manorrock Common - Project</name>
+    <url>https://github.com/manorrock/common</url>
+    <description>
+        The Manorrock Common Project delivers you with common functionality used
+        across the Manorrock product line.
+    </description>
+    <licenses>
+        <license>
+            <name>Manorrock BSD License</name>
+            <url>https://github.com/manorrock/common/blob/master/LICENSE</url>
+        </license>
+    </licenses>
     <build>
         <pluginManagement>
             <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>3.2.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>3.2.1</version>
+                </plugin>
                 <plugin>
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
@@ -23,6 +44,32 @@
             </plugins>
         </pluginManagement>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <inherited>true</inherited>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <inherited>true</inherited>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
@@ -56,6 +103,14 @@
             </plugin>
         </plugins>
     </build>
+    <developers>
+        <developer>
+            <id>mriem</id>
+            <name>Manfred Riem</name>
+            <email>mriem@manorrock.com</email>
+            <organization>Manorrock.com</organization>
+        </developer>
+    </developers>
     <distributionManagement>
         <snapshotRepository>
             <id>ossrh</id>
@@ -67,8 +122,41 @@
         <module>kvs</module>
         <module>yaml</module>
     </modules>
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                                <configuration>
+                                    <gpgArguments>
+                                        <arg>--pinentry-mode</arg>
+                                        <arg>loopback</arg>
+                                    </gpgArguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
+    <scm>
+        <connection>scm:git:git://github.com/manorrock/common.git</connection>
+        <developerConnection>scm:git:git@github.com:manorrock/common.git</developerConnection>
+        <url>https://github.com/manorrock/common</url>
+    </scm>
 </project>

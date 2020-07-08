@@ -130,18 +130,11 @@ public class RedisKeyValueStore<K, V> implements KeyValueStore<K, V> {
         connection.sync().set(key, value);
     }
 
-    /**
-     * @see KeyValueStore#setKeyMapper(com.manorrock.common.kvs.api.Mapper)
-     */
     @Override
     public void setKeyMapper(KeyValueMapper keyMapper) {
         this.keyMapper = keyMapper;
     }
 
-    /**
-     * @see
-     * KeyValueStore#setValueMapper(com.manorrock.common.kvs.api.ValueMapper)
-     */
     @Override
     public void setValueMapper(KeyValueMapper valueMapper) {
         this.valueMapper = valueMapper;
