@@ -14,6 +14,6 @@ jobs:
         java-version: 11
     - name: Setup settings.xml
       run: |
-        echo $SETTINGS_XML > $HOME/.m2/settings.xml
+        cat $SETTINGS_XML > $HOME/.m2/settings.xml
     - name: Build with Maven
       run: mvn -B -DskipTests=true -DskipITs=true deploy
