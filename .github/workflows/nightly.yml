@@ -12,8 +12,5 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 11
-    - name: Setup settings.xml
-      run: |
-        cat $SETTINGS_XML > $HOME/.m2/settings.xml
     - name: Build with Maven
-      run: mvn -B -DskipTests=true -DskipITs=true deploy
+      run: mvn -B -DskipTests=true -DskipITs=true install
