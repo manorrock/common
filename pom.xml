@@ -122,6 +122,7 @@
         <module>kvs</module>
         <module>yaml</module>
         <module>json</module>
+        <module>csv</module>
     </modules>
     <profiles>
         <profile>
