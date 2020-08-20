@@ -14,3 +14,8 @@ jobs:
         java-version: 11
     - name: Build with Maven
       run: mvn -B -DskipTests=true -DskipITs=true install
+    - name: Publish SNAPSHOTS to oss.sonatype.org
+      run: mvn --no-transfer-progress -B -DskipTests=true deploy
+      env:
+          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
