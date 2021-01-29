@@ -10,4 +10,10 @@
     <artifactId>common-kvs-api</artifactId>
     <packaging>jar</packaging>
     <name>KeyValueStore - API</name>
+    <distributionManagement>
+        <relocation>
+            <groupId>com.manorrock.eagle</groupId>
+            <artifactId>eagle-api</artifactId>
+        </relocation>
+    </distributionManagement>
 </project>

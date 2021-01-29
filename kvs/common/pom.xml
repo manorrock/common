@@ -9,12 +9,10 @@
     <artifactId>common-kvs-common</artifactId>
     <packaging>jar</packaging>
     <name>KeyValueStore - Common</name>
-    <dependencies>
-        <dependency>
-            <groupId>com.manorrock.common.kvs</groupId>
-            <artifactId>common-kvs-api</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-        </dependency>
-    </dependencies>
+    <distributionManagement>
+        <relocation>
+            <groupId>com.manorrock.eagle</groupId>
+            <artifactId>common</artifactId>
+        </relocation>
+    </distributionManagement>
 </project>
